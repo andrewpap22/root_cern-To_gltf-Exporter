@@ -7,13 +7,13 @@
         body {
             margin: 0;
         }
-        
+
         canvas {
             width: 100%;
             height: 100%
         }
     </style>
-     <script src="jsroot/node_modules/three/build/three.js"></script>
+    <script src="jsroot/node_modules/three/build/three.js"></script>
     <script src="jsroot/node_modules/three/examples/js/controls/OrbitControls.js"></script>
     <script src="GLTFExporter.js"> </script>
     <script src="jsroot/scripts/JSRootCore.js?geom&onload=init" type="text/javascript"></script>
@@ -23,9 +23,9 @@
 
 <body>
 
-<script>
-       
-   
+    <script>
+
+
         var container, stats;
         var camera, scene, renderer, controls;
 
@@ -37,34 +37,36 @@
         var detector;
 
 
-        function process_root_node(node, level = 0) {
-            //console.log("processing:", node.fName, node)
-            if (node.fVolumes) {
-                for (let i = 0; i < node.fVolumes.arr.length; i++) {
-                    subvol = node.fVolumes.arr[i];
-                    if (!subvol.fName.startsWith("Velo")) {
-                
-                        // console.log("Disabling vis on ", subvol)
-                        // JSROOT.GEO.SetBit(subvol, JSROOT.GEO.BITS.kVisThis, false);
-                        // JSROOT.GEO.SetBit(subvol, JSROOT.GEO.BITS.kVisDaughters, false);
-                        // console.log("Disabled vis on ", subvol)
-                        subvol.fGeoAtt = 0;
-                    }
-                    //console.log("subvolume:", subvol.fName, subvol);
-                    if (subvol.fNodes) {
-                         for (let j = 0; j < subvol.fNodes.arr.length; j++) {
-                             snode = subvol.fNodes.arr[j]
-                    //         if (!snode.fName.startsWith("Velo")) {
-                    //             //console.log("Disabling vis on ", snode)
-                    //             // JSROOT.GEO.SetBit(snode.fVolume, JSROOT.GEO.BITS.kVisThis, false);
-                    //             // JSROOT.GEO.SetBit(snode.fVolume, JSROOT.GEO.BITS.kVisDaughters, false);
-                    //             // snode.fVolume.fTrans = 0.8;
-                    //             snode.fVolume.fGeoAtt = 0;
-                    //         }
-                    //         //console.log("subnodes:", subvol.fNodes.arr[j].fName, subvol.fNodes.arr[j]);
-                            process_root_node(subvol.fNodes.arr[j], level+ 1);
-                         }
-                    }
+        function process_root_node(node, level = 0, path = "") {
+            
+            tmpname = node.fName;
+            //console.log("processing:", tmpname, path, node)
+            if (tmpname.startsWith("MagnetYoke") 
+                || tmpname.startsWith("ITlvAirVolume")
+                || tmpname.startsWith("EcalModules")
+                || tmpname.startsWith("VeloVacTank")
+                || tmpname.startsWith("VeloRFBox")
+                || tmpname.startsWith("VeloRFFoil")
+                || tmpname.startsWith("PipeSection")
+                || tmpname.startsWith("Rich1lvRich1Mgs")
+                || tmpname.startsWith("Rich1lvRich1Exit")
+                || tmpname.startsWith("Velo2Rich")
+                || tmpname.startsWith("Rich2lvRich2MagSh")
+                //|| tmpname.startsWith("EcalInstallationOutBlock")
+            ) {
+                node.fVolume.fGeoAtt = 0;
+            }
+            if (tmpname.startsWith("HCalInstallationlvHCal")) {
+                node.fVolume.fGeoAtt = 12;
+            }
+            if (tmpname.startsWith("EcalInstallationOutSection")) {
+                node.fVolume.fGeoAtt = 12;
+            }
+            //console.log("subvolume:", tmpname, node);
+            if (node.fVolume.fNodes) {
+                for (let j = 0; j < node.fVolume.fNodes.arr.length; j++) {
+                    snode = node.fVolume.fNodes.arr[j];
+                    process_root_node(snode, level + 1, path + "/" + tmpname);
                 }
             }
         }
@@ -76,20 +78,13 @@
                 numfaces: 5000000,
                 numnodes: 50000,
                 dflt_colors: true,
-                vislevel : 4
+                vislevel: 4
             };
             console.log(obj);
             rootgeom = obj;
-            //process_root_node(obj);
+            process_root_node(obj.fNodes.arr[0]);
             var obj3d = JSROOT.GEO.build(obj, opt, display_geometry);
         }
-
-        // function process_node(node) {
-        //     console.log("processing: ", node.name, "(", node.children.length, ")");
-        //     for (let i = 0; i < node.children.length; i++) {
-        //         process_node(node.children[i]);
-        //     }
-        // }
 
         function display_geometry(obj3d) {
 
@@ -139,7 +134,7 @@
             scene = new THREE.Scene();
 
             var filename = "lhcbfull.root"
-            JSROOT.OpenFile(filename, function(file) {
+            JSROOT.OpenFile(filename, function (file) {
                 file.ReadObject("Geometry;1", add_geometry);
 
             });
@@ -186,18 +181,24 @@
             scene.add(light);
 
             window.addEventListener('resize', onWindowResize, false);
-            options = {};
-             GLTFExporter.parse(detector, function ( gltf ) { 
-                 console.log( gltf ); 
-                
-                 var fileToSave = new Blob([JSON.stringify(gltf)], {
-                     type: 'application/json',
-                     name: "lhcb.gltf"});
 
-                 // Save the file
-                 saveAs(fileToSave, "lhcb.gltf");
-                 downloadJSON( gltf ); 
-             }, options );
+
+            var doexport = true;
+            if (doexport) {
+                options = {};
+                GLTFExporter.parse(detector, function (gltf) {
+                    console.log(gltf);
+
+                    var fileToSave = new Blob([JSON.stringify(gltf)], {
+                        type: 'application/json',
+                        name: "lhcb.gltf"
+                    });
+
+                    // Save the file
+                    saveAs(fileToSave, "lhcb.gltf");
+                    downloadJSON(gltf);
+                }, options);
+            }
             animate();
         }
 
@@ -219,13 +220,13 @@
         }
 
 
- </script>
+    </script>
 
-<script>
-  
-  function init() {
+    <script>
+
+        function init() {
             console.log("In init");
             loadgeo();
         }
-</script>
+    </script>
 </body>
