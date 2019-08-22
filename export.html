@@ -22,10 +22,10 @@
 </head>
 
 <body>
-
+    <div id="mylog" style="block"></div>
     <script>
 
-
+        var mylog = document.getElementById('mylog'); 
         var container, stats;
         var camera, scene, renderer, controls;
 
@@ -36,34 +36,40 @@
         var rootgeom;
         var detector;
 
+        var to_hide = ["HcalInstallationlvHcalInnerSupportFrame",
+            "MagnetYoke", "ITlvAirVolume", "EcalModules", "HcalModules", "VeloVacTank", "VeloRFBox",
+            "VeloRFFoil", "PipeSection", "Rich1lvRich1Mgs", "Rich1lvRich1MagSh", "Rich1lvRich1Exit",
+            "Velo2Rich", "Rich2lvRich2MagSh", "Rich2lvRich2Tube"];
+
+        var hide_children = ["HcalInstallationlvHcal_4825", "EcalInstallationEcal_4826"];
 
         function process_root_node(node, level = 0, path = "") {
-            
+            //mylog.innerHTML += path + " " +  level + " " + node.fName + "\n";
+
             tmpname = node.fName;
+            iterate_children = true;
             //console.log("processing:", tmpname, path, node)
-            if (tmpname.startsWith("MagnetYoke") 
-                || tmpname.startsWith("ITlvAirVolume")
-                || tmpname.startsWith("EcalModules")
-                || tmpname.startsWith("VeloVacTank")
-                || tmpname.startsWith("VeloRFBox")
-                || tmpname.startsWith("VeloRFFoil")
-                || tmpname.startsWith("PipeSection")
-                || tmpname.startsWith("Rich1lvRich1Mgs")
-                || tmpname.startsWith("Rich1lvRich1Exit")
-                || tmpname.startsWith("Velo2Rich")
-                || tmpname.startsWith("Rich2lvRich2MagSh")
-                //|| tmpname.startsWith("EcalInstallationOutBlock")
-            ) {
-                node.fVolume.fGeoAtt = 0;
+
+            for (let i = 0; i < to_hide.length; i++) {
+                item = to_hide[i];
+                //console.log("Checking:", item);
+                if (tmpname.startsWith(item)) {
+                    node.fVolume.fGeoAtt = 0;
+                }
             }
-            if (tmpname.startsWith("HCalInstallationlvHCal")) {
-                node.fVolume.fGeoAtt = 12;
+
+            for (let i = 0; i < hide_children.length; i++) {
+                item = hide_children[i];
+                //console.log("Checking:", item);
+                if (tmpname.startsWith(item)) {
+                    node.fVolume.fGeoAtt = 4;
+                    iterate_children = false;
+                    //console.log("Matched", item, tmpname, path)
+                }
             }
-            if (tmpname.startsWith("EcalInstallationOutSection")) {
-                node.fVolume.fGeoAtt = 12;
-            }
+
             //console.log("subvolume:", tmpname, node);
-            if (node.fVolume.fNodes) {
+            if (node.fVolume.fNodes && iterate_children) {
                 for (let j = 0; j < node.fVolume.fNodes.arr.length; j++) {
                     snode = node.fVolume.fNodes.arr[j];
                     process_root_node(snode, level + 1, path + "/" + tmpname);
@@ -82,7 +88,7 @@
             };
             console.log(obj);
             rootgeom = obj;
-            process_root_node(obj.fNodes.arr[0]);
+            process_root_node(obj.fNodes.arr[0], 0, "");
             var obj3d = JSROOT.GEO.build(obj, opt, display_geometry);
         }
 
@@ -196,7 +202,6 @@
 
                     // Save the file
                     saveAs(fileToSave, "lhcb.gltf");
-                    downloadJSON(gltf);
                 }, options);
             }
             animate();
