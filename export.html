@@ -16,7 +16,8 @@
     <script src="jsroot/node_modules/three/build/three.js"></script>
     <script src="jsroot/node_modules/three/examples/js/controls/OrbitControls.js"></script>
     <script src="GLTFExporter.js"> </script>
-    <script src="jsroot/scripts/JSRootCore.js?geom&onload=init" type="text/javascript"></script>
+    <script type="text/javascript" src="https://root.cern/js/latest/scripts/JSRoot.core.js">
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/1.3.8/FileSaver.js"></script>
 
 </head>
@@ -24,8 +25,7 @@
 <body>
     <div id="mylog" style="block"></div>
     <script>
-
-        var mylog = document.getElementById('mylog'); 
+        var mylog = document.getElementById('mylog');
         var container, stats;
         var camera, scene, renderer, controls;
 
@@ -39,9 +39,14 @@
         var to_hide = ["HcalInstallationlvHcalInnerSupportFrame",
             "MagnetYoke", "ITlvAirVolume", "EcalModules", "HcalModules", "VeloVacTank", "VeloRFBox",
             "VeloRFFoil", "PipeSection", "Rich1lvRich1Mgs", "Rich1lvRich1MagSh", "Rich1lvRich1Exit",
-            "Velo2Rich", "Rich2lvRich2MagSh", "Rich2lvRich2Tube"];
+            "Velo2Rich", "Rich2lvRich2MagSh", "Rich2lvRich2Tube", "MagnetCoil_4844", "MuonlvMuonBack_4823",
+            "MuonlvMuFilter4_4811", "MuonlvMuFilter3_4812", "MuonlvMuFilter2_4813", "MuonlvMuFilter1_4814"
+        ];
 
-        var hide_children = ["HcalInstallationlvHcal_4825", "EcalInstallationEcal_4826"];
+        var hide_children = ["HcalInstallationlvHcal_4825", "EcalInstallationEcal_4826", "HcalInstallationlvHcalOuterSection_3181",
+            "HcalInstallationlvHcalInnerSection_3182", "EcalInstallationOutSection_2773", "EcalInstallationMidSection_2774",
+            "EcalInstallationInnSection_2775"
+        ];
 
         function process_root_node(node, level = 0, path = "") {
             //mylog.innerHTML += path + " " +  level + " " + node.fName + "\n";
@@ -79,6 +84,8 @@
 
         function add_geometry(obj) {
 
+            console.log("inside add_geometry");
+
             // options for building three.js model
             var opt = {
                 numfaces: 5000000,
@@ -89,7 +96,11 @@
             console.log(obj);
             rootgeom = obj;
             process_root_node(obj.fNodes.arr[0], 0, "");
-            var obj3d = JSROOT.GEO.build(obj, opt, display_geometry);
+            JSROOT.require('geom')
+                .then(geo => {
+                    let obj3d = geo.build(obj, opt);
+                    display_geometry(obj3d)
+                });
         }
 
         function display_geometry(obj3d) {
@@ -107,6 +118,8 @@
         }
 
         function loadgeo() {
+
+            console.log("inside loadgeo");
 
             container = document.createElement('div');
             document.body.appendChild(container);
@@ -139,11 +152,14 @@
             // scene
             scene = new THREE.Scene();
 
-            var filename = "lhcbfull.root"
-            JSROOT.OpenFile(filename, function (file) {
-                file.ReadObject("Geometry;1", add_geometry);
+            console.log("inside loadgeo_beforeFilename");
 
-            });
+            var filename = "https://root.cern/files/lhcbfull.root"
+            JSROOT.openFile(filename)
+                .then(file => file.readObject("Geometry;1"))
+                .then(obj => add_geometry(obj));
+            // file.readObject("Geometry;1", add_geometry);
+
 
         }
 
@@ -192,7 +208,7 @@
             var doexport = true;
             if (doexport) {
                 options = {};
-                GLTFExporter.parse(detector, function (gltf) {
+                GLTFExporter.parse(detector, function(gltf) {
                     console.log(gltf);
 
                     var fileToSave = new Blob([JSON.stringify(gltf)], {
@@ -201,7 +217,8 @@
                     });
 
                     // Save the file
-                    saveAs(fileToSave, "lhcb.gltf");
+                    console.log("reached this point??");
+                    saveAs(fileToSave, "./lhcb.gltf");
                 }, options);
             }
             animate();
@@ -223,15 +240,9 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
         }
-
-
     </script>
 
     <script>
-
-        function init() {
-            console.log("In init");
-            loadgeo();
-        }
+        loadgeo();
     </script>
 </body>
