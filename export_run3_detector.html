@@ -36,17 +36,33 @@
         var rootgeom;
         var detector;
 
-        var to_hide = ["HcalInstallationlvHcalInnerSupportFrame",
-            "MagnetYoke", "ITlvAirVolume", "EcalModules", "HcalModules", "VeloVacTank", "VeloRFBox",
-            "VeloRFFoil", "PipeSection", "Rich1lvRich1Mgs", "Rich1lvRich1MagSh", "Rich1lvRich1Exit",
-            "Velo2Rich", "Rich2lvRich2MagSh", "Rich2lvRich2Tube", "MagnetCoil_4844", "MuonlvMuonBack_4823",
-            "MuonlvMuFilter4_4811", "MuonlvMuFilter3_4812", "MuonlvMuFilter2_4813", "MuonlvMuFilter1_4814"
-        ];
+        /**
+         * Uncomment the following arrays to hide the parts that you need. 
+         * You can remove specific strings from the arrays to hide specific parts!
+         */
 
-        var hide_children = ["HcalInstallationlvHcal_4825", "EcalInstallationEcal_4826", "HcalInstallationlvHcalOuterSection_3181",
-            "HcalInstallationlvHcalInnerSection_3182", "EcalInstallationOutSection_2773", "EcalInstallationMidSection_2774",
-            "EcalInstallationInnSection_2775"
-        ];
+        // var to_hide = [
+        //     "_dd_Structure_LHCb_MagnetRegion_Magnet_UpperCoil0x18b2fdb0", "_dd_Structure_LHCb_MagnetRegion_Magnet_LowerCoil0x18b2fe80",
+        //     "_dd_Structure_LHCb_MagnetRegion_Magnet_Left_Vertical_Part0x18b2eef0",
+        //     "_dd_Structure_LHCb_MagnetRegion_Magnet_Right_Vertical_Part0x18b2ef50",
+        //     "_dd_Structure_LHCb_MagnetRegion_Magnet_Upper_Horizontal_Part0x18b2bd10",
+        //     "_dd_Structure_LHCb_MagnetRegion_Magnet_Lower_Horizontal_Part0x18b2be40"
+        // ];
+
+        // var hide_children = [
+        //     "_dd_Structure_LHCb_DownstreamRegion_Ecal0x18c35b20", "_dd_Structure_LHCb_DownstreamRegion_Hcal0x18c702d0",
+        //     "_dd_Structure_LHCb_DownstreamRegion_Muon_pvMuonBack0x18303210", "_dd_Structure_LHCb_BeforeMagnetRegion_Rich10x18b29c90",
+        //     "_dd_Structure_LHCb_BeforeMagnetRegion_VP0x183fd6f0", "_dd_Structure_LHCb_BeforeMagnetRegion_UT0x184c8430", "_dd_Structure_LHCb_AfterMagnetRegion_Rich20x1934e2d0",
+        //     "_dd_Structure_LHCb_AfterMagnetRegion_T_FT0x191249b0"
+        // ];
+
+        /**
+         * This is used to hide only the pipe in a single go instead of piece by piece.
+         */
+        // var hide_pipe = [
+        //     "_dd_Structure_LHCb_MagnetRegion_PipeSupportsInMagnet_", "_dd_Structure_LHCb_AfterMagnetRegion_T_PipeInT_", "_dd_Structure_LHCb_DownstreamRegion_PipeDownstream_", "_dd_Structure_LHCb_AfterMagnetRegion_Pipe", "_dd_Structure_LHCb_MagnetRegion_PipeInMagnet_",
+        //     "_dd_Structure_LHCb_DownstreamRegion_PipeSupportsDownstream_", "_dd_Structure_LHCb_DownstreamRegion_PipeBakeoutDownstream_", "_dd_Structure_LHCb_MagnetRegion_BcmDown_", "_dd_Structure_LHCb_DownstreamRegion_NeutronShielding_"
+        // ];
 
         function process_root_node(node, level = 0, path = "") {
             //mylog.innerHTML += path + " " +  level + " " + node.fName + "\n";
@@ -67,9 +83,18 @@
                 item = hide_children[i];
                 //console.log("Checking:", item);
                 if (tmpname.startsWith(item)) {
-                    node.fVolume.fGeoAtt = 4;
+                    node.fVolume.fGeoAtt = 0;
                     iterate_children = false;
                     //console.log("Matched", item, tmpname, path)
+                }
+            }
+
+            // used for the pipe only
+            for (let i = 0; i < hide_pipe.length; i++) {
+                item = hide_pipe[i];
+                if (tmpname.startsWith(item)) {
+                    node.fVolume.fGeoAtt = 0;
+                    iterate_children = false;
                 }
             }
 

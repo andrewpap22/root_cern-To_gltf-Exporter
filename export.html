@@ -36,17 +36,28 @@
         var rootgeom;
         var detector;
 
-        var to_hide = ["HcalInstallationlvHcalInnerSupportFrame",
-            "MagnetYoke", "ITlvAirVolume", "EcalModules", "HcalModules", "VeloVacTank", "VeloRFBox",
-            "VeloRFFoil", "PipeSection", "Rich1lvRich1Mgs", "Rich1lvRich1MagSh", "Rich1lvRich1Exit",
-            "Velo2Rich", "Rich2lvRich2MagSh", "Rich2lvRich2Tube", "MagnetCoil_4844", "MuonlvMuonBack_4823",
-            "MuonlvMuFilter4_4811", "MuonlvMuFilter3_4812", "MuonlvMuFilter2_4813", "MuonlvMuFilter1_4814"
-        ];
+        /**
+         * Uncomment the following arrays to hide the parts that you need. 
+         * You can remove specific strings from the arrays to hide specific parts!
+         */
 
-        var hide_children = ["HcalInstallationlvHcal_4825", "EcalInstallationEcal_4826", "HcalInstallationlvHcalOuterSection_3181",
-            "HcalInstallationlvHcalInnerSection_3182", "EcalInstallationOutSection_2773", "EcalInstallationMidSection_2774",
-            "EcalInstallationInnSection_2775"
-        ];
+        // var to_hide = [
+        //     "MagnetYoke", "ITlvAirVolume", "VeloVacTank", "VeloRFBox",
+        //     "VeloRFFoil", "PipeSection", "Rich1lvRich1Mgs", "Rich1lvRich1MagSh", "Rich1lvRich1Exit",
+        //     "Velo2Rich", "Rich2lvRich2MagSh", "Rich2lvRich2Tube", "MagnetCoil_4844", "VeloSupports", "VeloSensors",
+        //     "OTModules", "ITITS3", "Rich1lvRich1", "ITITS1l", "VeloWFConel", "ITITS2lv", "ITITS", "Rich1l", "Rich2l",
+        //     "PrsInstallation", "PrsSteelSheet", "SpdInstallation"
+        // ];
+
+        // var hide_children = [];
+
+        // var hide_EcalHcal = [
+        //     "EcalInstallation", "HcalInstallation"
+        // ];
+
+        // var hide_muon = [
+        //     "Muon"
+        // ];
 
         function process_root_node(node, level = 0, path = "") {
             //mylog.innerHTML += path + " " +  level + " " + node.fName + "\n";
@@ -63,11 +74,29 @@
                 }
             }
 
+            // Hide Ecal, Hcal
+            for (let i = 0; i < hide_EcalHcal.length; i++) {
+                item = hide_EcalHcal[i];
+                //console.log("Checking:", item);
+                if (tmpname.startsWith(item)) {
+                    node.fVolume.fGeoAtt = 0;
+                }
+            }
+
+            // Hide Muon
+            for (let i = 0; i < hide_muon.length; i++) {
+                item = hide_muon[i];
+                //console.log("Checking:", item);
+                if (tmpname.startsWith(item)) {
+                    node.fVolume.fGeoAtt = 0;
+                }
+            }
+
             for (let i = 0; i < hide_children.length; i++) {
                 item = hide_children[i];
                 //console.log("Checking:", item);
                 if (tmpname.startsWith(item)) {
-                    node.fVolume.fGeoAtt = 4;
+                    node.fVolume.fGeoAtt = 0;
                     iterate_children = false;
                     //console.log("Matched", item, tmpname, path)
                 }
