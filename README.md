@@ -128,6 +128,11 @@ var filename = "./root_files/my_root_file.root";
 
 By default when you simply load your own root file and run the exporter you should get a .gltf file as output that describes your whole geometry provided from the root file into a (you guessed it) .gltf file.
 
+#### How to run the exporter: 
+
+Simply open the `export.html` file in your browser, or execute the `run.sh` script which does the same thing 😛. 
+By default the `run.sh` script uses the brave browser so if you're using anything else simply modify the file by changing brave to whatever browser you're using! 
+
  3. Open your gltf file and see it in action. 
 
 Using the following tool -> [gltf_viewer](https://gltf-viewer.donmccurdy.com/) you can import and open your .gltf file and you should see your geometry rendered and displayed properly on the screen. Apart from that if you open the browser's developer tools and then go to the `console` tab you should see all the meshes displayed there in strings and those string labels will be very useful to you in order to use them properly to hide different parts of your geometry and export multiple .gltf files that describe those seperated parts, but all together describe your whole geometry. Those string labels in the console are the exactly same strings that are used in your root file to describe all the parts of your geometry and can be seen by importing the root file itself to the following tool -> [root_viewer](https://jsroot.gsi.de/latest/). 
