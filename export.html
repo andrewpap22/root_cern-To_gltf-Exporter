@@ -187,9 +187,6 @@
             JSROOT.openFile(filename)
                 .then(file => file.readObject("Geometry;1"))
                 .then(obj => add_geometry(obj));
-            // file.readObject("Geometry;1", add_geometry);
-
-
         }
 
         function postinit() {
