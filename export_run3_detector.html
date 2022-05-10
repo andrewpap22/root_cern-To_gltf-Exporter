@@ -13,7 +13,7 @@
 <body>
   <script>
 
-    function match(name, paths) {
+    function startsWith(name, paths) {
         for (const path of paths) {
             if (name.startsWith(path)) {
                 return true;
@@ -23,7 +23,7 @@
     }
 
     function filterArrayInPlace(a, condition, thisArg) {
-        let j = 0;
+        var j = 0;
         a.forEach((e, i) => { 
             if (condition.call(thisArg, e, i, a)) {
                 if (i!==j) a[j] = e; 
@@ -35,71 +35,40 @@
     }
 
     var hide_children = [
+
+        // Drop VP delivery pipes
+        "_dd_Geometry_BeforeMagnetRegion_VP_Supports_lvDeliveryPipe",
         
-        // VP
-        /*"_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule01WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule03WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule05WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule07WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule09WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule11WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule13WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule15WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule17WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule19WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule21WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule23WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule25WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule27WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule29WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule31WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule33WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule35WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule37WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule39WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule41WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule43WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule45WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule47WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule49WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule51WithSupport_",
+        // Drop Rich1 DetSupFrame and QuadrantModule
+        "_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1PhDetSupFrame",
+        "_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1Mirror1QuadrantModule",
+        
+        // Drop UT Staves
+        "_dd_Geometry_BeforeMagnetRegion_UT_Staves",
+    
+        // Drop FT modules and frames
+        "_dd_Geometry_AfterMagnetRegion_T_FT_Modules",
+        "_dd_Geometry_AfterMagnetRegion_T_FT_CFrames",
 
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule01WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule03WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule05WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule07WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule09WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule11WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule13WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule15WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule17WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule19WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule21WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule23WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule25WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule27WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule29WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule31WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule33WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule35WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule37WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule39WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule41WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule43WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule45WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule47WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule49WithSupport_",
-        "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule51WithSupport_",*/
+        // Drop Rich2 Modules
+        "_dd_Geometry_BeforeMagnetRegion_Rich1_Rich2StdPmtModule",
+        "_dd_Geometry_BeforeMagnetRegion_Rich1_Rich2GrandPmtModule",
+        
+        // Drop Ecal Blocks
+        "_dd_Geometry_DownstreamRegion_Ecal_Installation_InnBlock",
+        "_dd_Geometry_DownstreamRegion_Ecal_Installation_MidBlock",
+        "_dd_Geometry_DownstreamRegion_Ecal_Installation_OutBlock",
 
+        // Drop Hcal modules
+        "_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalInnHalfModule",
+        "_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalOutHalfModule",
+        "_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalInnMidlHalfModule",
+        
         // Drop Muon Chambers
         "_dd_Geometry_DownstreamRegion_Muon_M2",
         "_dd_Geometry_DownstreamRegion_Muon_M3",
         "_dd_Geometry_DownstreamRegion_Muon_M4",
         "_dd_Geometry_DownstreamRegion_Muon_M5",
-    
-        // FT drop modules and frames
-        "_dd_Geometry_AfterMagnetRegion_T_FT_Modules",
-        "_dd_Geometry_AfterMagnetRegion_T_FT_CFrames",
 
     ];
 
@@ -121,106 +90,82 @@
                               "_dd_Structure_LHCb_AfterMagnetRegion_Pipe",
                               "_dd_Structure_LHCb_DownstreamRegion_Pipe"], true],
         // VP
-        "VP > Struct" : [["_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvLeftDetSup",
-                          "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvRightDetSup"], true],
         "VP > RFFoil" : [["_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvLeftRFFoil",
-                          "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvrightRFFoil"], true],
+                          "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPRight_pvRightRFFoil"], false],
         "VP > Modules" : [["_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule",
-                           "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPright_pvModule"], true],
+                           "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPRight_pvModule"], true],
+        "VP > Structure" : [["_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvLeftDetSup",
+                             "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPRight_pvRightDetSup"], .3],
         // UT
         "UT" : [["_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTFrame",
                  "_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTBox0x",
                  "_dd_Geometry_BeforeMagnetRegion_UT_lvUT_pvUTa"], true],
         // Rich1
-        "Rich1 > Support" : [["_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1Master_pvRich1Mgs",
-                              "_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1SubMaster_pvRich1Mgs"], false],
-        "Rich1 > Mirrors" : [["_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1SubMaster_pvRich1Mag",
-                              "_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1SubMaster_pvRich1Mirror"], true],
-        "Rich1 > Exit" : [["_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1SubMaster_pvRich1Exit"], true],
+        "Rich1 > R1Support" : [["_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1Master_pvRich1Mgs",
+                                "_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1SubMaster_pvRich1Mgs"], .3],
+        "Rich1 > R1Mag" : [["_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1SubMaster_pvRich1Mag"], true],
+        "Rich1 > R1Mirrors" : [["_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1Mirror"], true],
+        "Rich1 > Exit" : [["_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1SubMaster_pvRich1Exit"], false],
         
         // Magnet
-        "Magnet > Support" : [["_dd_Structure_LHCb_MagnetRegion_Magnet_Left_Vertical_Part",
+        "Magnet > MSupport" : [["_dd_Structure_LHCb_MagnetRegion_Magnet_Left_Vertical_Part",
                                "_dd_Structure_LHCb_MagnetRegion_Magnet_Right_Vertical_Part",
                                "_dd_Structure_LHCb_MagnetRegion_Magnet_Upper_Horizontal_Part",
-                               "_dd_Structure_LHCb_MagnetRegion_Magnet_Lower_Horizontal_Part"], false],
+                               "_dd_Structure_LHCb_MagnetRegion_Magnet_Lower_Horizontal_Part"], .3],
         "Magnet > Coil" : [["_dd_Structure_LHCb_MagnetRegion_Magnet_UpperCoil",
                             "_dd_Structure_LHCb_MagnetRegion_Magnet_LowerCoil"], true],
-        "Bcm" : [["_dd_Structure_LHCb_MagnetRegion_Bcm"], false],
         // FT
-        "FT" : [["_dd_Structure_LHCb_AfterMagnetRegion_T_FT"], true],
+        "FT" : [["_dd_Geometry_AfterMagnetRegion_T_FT_Stations"], true],
+        
         // Rich2
-        "Rich2 > Support" : [["_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2AirBox",
-                              "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2AirTrap"], true],
-        "Rich2 > Frame" : [["_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2Tube",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2EntryWindowSkinBack",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2EntryWindowPMI",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2EntryWindowSkinFront",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2EntryWinTubeLock",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2ExitWindowSkinBack",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2ExitWindowPMI",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2ExitWindowSkinFront",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2ExitWinTubeLock",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2GasContTop",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2GasContBot",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2GasContSide0",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2GasContSide1",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2MagShFront0",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2MagShTop0",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2MagShBottom0",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2MagShSideBack0",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2MagShSideFront0",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2MagShFront1",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2MagShTop1",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2MagShBottom1",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2MagShSideBack1",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2MagShSideFront1",
-                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRichSystem"], false],
-        "Rich2 > Mirrors" : [["_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Gas_pvRich2Sec",
-                              "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Gas_pvRich2SphMirrorCont",
-                              "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Gas_pvRich2SecMirrorCont",
-                              "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Gas_pvRich2SecMSupport",
-                              "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2QuartzWindow_0",
-                              "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2QuartzWindow_1",
-                              "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2HPDN2Encl0",
-                              "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2HPDN2Encl1"], true],
+        "Rich2 > R2Support" : [["_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2AirBox",
+                                "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2AirTrap"], true],
+        "Rich2 > Tube" : [["_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2Tube"], true],
+        "Rich2 > Windows" : [["_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2EntryWindow",
+                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2ExitWindow"], false],
+        "Rich2 > R2Box" : [["_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2GasCont",
+                            "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2MagSh"], .3],
+        "Rich2 > R2Mirrors" : [["_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2SphMirror",
+                                "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2SecMirror",
+                                "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2QuartzWindow",
+                                "_dd_Geometry_AfterMagnetRegion_Rich2_lvRich2Master_pvRich2HPDN2Encl"], true],
         // Neutron shielding
-        "NeutronShielding" : [["_dd_Structure_LHCb_DownstreamRegion_NeutronShielding"], true],
+        "NeutronShielding" : [["_dd_Structure_LHCb_DownstreamRegion_NeutronShielding"], .3],
         // Ecal
         "Ecal > Fiber" : [["_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalLeft_Fiber",
                            "_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalRight_Fiber"], false],
         "Ecal > InnSupport" : [["_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalLeft_InnSupport",
-                                "_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalRight_InnSupport"], false],
-        "Ecal > Inner" : [["_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalLeft_EcalAInner",
-                           "_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalRight_EcalCInner"], false],
+                                "_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalRight_InnSupport"], true],
+        "Ecal > EInner" : [["_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalLeft_EcalAInner",
+                           "_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalRight_EcalCInner"], .3],
         "Ecal > Middle" : [["_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalLeft_EcalAMiddle",
-                            "_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalRight_EcalCMiddle"], false],
-        "Ecal > Outer" : [["_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalLeft_EcalAOuter",
-                           "_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalRight_EcalCOuter"], false],
+                            "_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalRight_EcalCMiddle"], .3],
+        "Ecal > EOuter" : [["_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalLeft_EcalAOuter",
+                           "_dd_Geometry_DownstreamRegion_Ecal_Installation_EcalRight_EcalCOuter"], .3],
         // Hcal
-        "Hcal > Inner" : [["_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalInnerSectionRight_pvHcalInnHalfModule",
-                           "_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalInnerSectionLeft_pvHcalInnHalfModule"], false],
+        "Hcal > HInner" : [["_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalInnerSectionRight_pvHcalInnHalfModule",
+                           "_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalInnerSectionLeft_pvHcalInnHalfModule"], .3],
         "Hcal > InnerShielding" : [["_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalInnerSectionRight_pvHcalInnerShielding",
-                                    "_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalInnerSectionLeft_pvHcalInnerShielding"], false],
+                                    "_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalInnerSectionLeft_pvHcalInnerShielding"], true],
         "Hcal > InnerReinforce" : [["_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalInnerSectionRight_pvInnerReinforce",
-                                    "_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalInnerSectionLeft_pvInnerReinforce"], false],
-        "Hcal > Outer" : [["_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalOuterSectionLeft_pvHcalOutHalfModule",
-                           "_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalOuterSectionRight_pvHcalOutHalfModule"], false],
+                                    "_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalInnerSectionLeft_pvInnerReinforce"], .3],
+        "Hcal > HOuter" : [["_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalOuterSectionLeft_pvHcalOutHalfModule",
+                           "_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalOuterSectionRight_pvHcalOutHalfModule"], .3],
         "Hcal > OuterReinforce" : [["_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalOuterSectionLeft_pvOuterReinforce",
-                                    "_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalOuterSectionRight_pvOuterReinforce"], false],
+                                    "_dd_Geometry_DownstreamRegion_Hcal_Installation_lvHcalOuterSectionRight_pvOuterReinforce"], .3],
         // Muon
         "Muon > Back" : [["_dd_Geometry_DownstreamRegion_Muon_lvMuonBack_pvM2",
                           "_dd_Geometry_DownstreamRegion_Muon_lvMuonBack_pvM3",
                           "_dd_Geometry_DownstreamRegion_Muon_lvMuonBack_pvM4",
                           "_dd_Geometry_DownstreamRegion_Muon_lvMuonBack_pvM5"],true],
-        "Muon > Filter" : [["_dd_Geometry_DownstreamRegion_Muon_lvMuonBack_pvMuFilter"], false],
+        "Muon > Filter" : [["_dd_Geometry_DownstreamRegion_Muon_lvMuonBack_pvMuFilter"], .3],
 
     }
     
     function cleanup_geometry(node, level = 0, hidden_paths) {
-        document.write(level); document.write(" " + node.fName + "<br>");
         if (node.fVolume.fNodes) {
             // drop hidden nodes, and everything after level 4
-            filterArrayInPlace(node.fVolume.fNodes.arr, n=>(level < 4) && (!match(n.fName, hidden_paths)));
+            filterArrayInPlace(node.fVolume.fNodes.arr, n=>level<4&&!startsWith(n.fName, hidden_paths));
             // recurse to children
             for (const snode of node.fVolume.fNodes.arr) {
                 cleanup_geometry(snode, level + 1, hidden_paths);
@@ -231,8 +176,8 @@
     function deduplicate(gltf) {
         // deduplicate materials
         // scan them, build table of correspondance
-        kept = []
-        links = {}
+        var kept = []
+        var links = {}
         var materials = gltf["materials"];
         for (var index = 0; index < materials.length; index++) {
             var found = false;
@@ -259,22 +204,56 @@
         }
     }
     
-    function convert_geometry(obj3d, name) {
+    function convert_geometry(obj3d, name, binary) {
         var exporter = new THREE.GLTFExporter;
         exporter.parse(obj3d, function(gltf) {
-            deduplicate(gltf);
-            var fileToSave = new Blob([JSON.stringify(gltf)], {
-                type: 'application/json',
-                name: "lhcb.gltf"
-            });
-            saveAs(fileToSave, "lhcb.gltf");
-        })// FIXME use binary mode ? , function(){}, {binary:true})
+            if (binary) {
+                saveAs(fileToSave, name);
+            } else {
+                // json output
+                deduplicate(gltf);
+                var fileToSave = new Blob([JSON.stringify(gltf)], {
+                    type: 'application/json',
+                    name: name
+                });
+                saveAs(fileToSave, name);
+            }
+        }, function(){}, {'binary':binary})
     }
 
+    var kVisThis = 0x80;
+    var kVisDaughter = 0x8;
+
+    function fixSphereShapes(shape) {
+        // in case of sphere, do the fix
+        if (shape._typename == "TGeoSphere") {
+            shape.fNseg = 3;
+            shape.fNz = 3;
+        }
+        // in case of composite shape, recurse
+        if (shape._typename == "TGeoCompositeShape") {
+            fixSphereShapes(shape.fNode.fLeft)
+            fixSphereShapes(shape.fNode.fRight)
+        }
+    }
+    
+    function setVisible(node) {
+        node.fVolume.fGeoAtt = (node.fVolume.fGeoAtt | kVisThis);
+        // Change the number of faces for sphere so that we avoid having
+        // megabytes for the Rich mirrors, which are actually almost flat
+        // Default was 20 and 11
+        fixSphereShapes(node.fVolume.fShape)
+    }
+    function setVisibleDaughter(node) {
+        node.fVolume.fGeoAtt = (node.fVolume.fGeoAtt | kVisDaughter);
+    }
+    function setInvisible(node) {
+        node.fVolume.fGeoAtt = (node.fVolume.fGeoAtt & ~kVisThis);
+    }
     function set_visible_recursively(node) {
-        node.fVolume.fGeoAtt |= 4;
+        setVisible(node);
         if (node.fVolume.fNodes) {
-            for (let j = 0; j < node.fVolume.fNodes.arr.length; j++) {
+            for (var j = 0; j < node.fVolume.fNodes.arr.length; j++) {
                 snode = node.fVolume.fNodes.arr[j];
                 set_visible_recursively(snode);
             }
@@ -282,61 +261,104 @@
     }
 
     // returns whether anything was kept
-    function keep_only_subpart(node, paths) {
-        if (!node.fVolume.fNodes) return false;
+    function keep_only_subpart(volume, paths) {
+        if (!volume.fNodes) return false;
         var anyfound = false;
-        for (let j = 0; j < node.fVolume.fNodes.arr.length; j++) {
-            snode = node.fVolume.fNodes.arr[j];
-            tmpname = snode.fName;
-            if (match(tmpname, paths)) {
+        for (var j = 0; j < volume.fNodes.arr.length; j++) {
+            var snode = volume.fNodes.arr[j];
+            if (startsWith(snode.fName, paths)) {
+                // need to be resursive in case something deeper was hidden in previous round
                 set_visible_recursively(snode);
                 anyfound=true;
             } else {
+                setInvisible(snode);
                 // only hide if no subpart is shown
-                const subpartfound = keep_only_subpart(snode, paths);
-                if (!subpartfound) {
-                    snode.fVolume.fGeoAtt &= ~4;
-                } else {
-                    snode.fVolume.fGeoAtt |= 4; 
-                    anyfound=true;
+                var subpartfound = keep_only_subpart(snode.fVolume, paths);
+                if (subpartfound) {
+                    setVisibleDaughter(snode);
+                    anyfound = true;
                }
             }
         }
         return anyfound;
     }
     
-    function add_geometry(obj) {
-        // drop nodes we do not want to see at all (usually too detailed parts)
-        cleanup_geometry(obj.fNodes.arr[0], 0, hide_children);
-        // dump to gltf, using one scene per subpart
-        JSROOT.require('geom').then(geo => {
-            var scenes = [];
-            // for each geometry subpart, duplicate the geometry and keep only the subpart
-            for (const [name, entry] of Object.entries(subparts)) {
+    async function add_geometry(obj) {
+        var scenes = [];
+        // for each geometry subpart, duplicate the geometry and keep only the subpart
+        for (const [name, entry] of Object.entries(subparts)) {
+            console.log('Generating ' + name);
+            // drop nodes we do not want to see at all (usually too detailed parts)
+            cleanup_geometry(obj.fNodes.arr[0], 0, hide_children);
+            // dump to gltf, using one scene per subpart
+            var promise = JSROOT.require('geom').then(geo => {
+                // set nb of degrees per face for circles approximation (default 6)
+                // here 15 means circles are polygones with 24 faces (default 60)
+                geo.geoCfg('GradPerSegm', 15);
                 const paths = entry[0];
-                const visible = entry[1];
+                const visibility = entry[1];
                 // extract subpart of ROOT geometry
-                obj.fNodes.arr[0].fVolume.fGeoAtt |= 4;
-                keep_only_subpart(obj.fNodes.arr[0], paths);
+                setVisible(obj.fNodes.arr[0]);
+                keep_only_subpart(obj.fMasterVolume, paths);
                 // convert to gltf
                 var scene = new THREE.Scene();
-		scene.name = name;
-                scene.children.push( geo.build(obj, {dflt_colors: true }) );
-                scene.userData = {"visible" : visible};
+                scene.name = name;
+                var children = geo.build(obj, {dflt_colors: true, vislevel:10, numfaces: 10000000, numnodes: 500000});
+                scene.children.push( children );
+                if (typeof visibility == "boolean") {
+                    scene.userData = {"visible" : visibility};
+                } else {
+                    scene.userData = {"visible" : true, "opacity" : visibility};
+                }
                 scenes.push(scene);
-            }
-            convert_geometry(scenes)
-        });
+            });
+            await promise;
+        }
+        console.log(scenes.length + ' scenes generated');
+        convert_geometry(scenes, 'lhcb.gltf', false); // not using binary format
     }
 
+    function recursive_dump_geometry(volume, prefix="", level=0) {
+        var output = volume.fName + "\n";
+        if (level == 5) return output;
+        if (!volume.fNodes) return output;
+        for (var j = 0; j < volume.fNodes.arr.length; j++) {
+            output += prefix + volume.fNodes.arr[j].fName + ' - ';
+            output += recursive_dump_geometry(volume.fNodes.arr[j].fVolume, "  " + prefix, level+1);
+        }
+        return output;
+    }
+    
+    async function dump_geometry(obj) {
+        var promise = JSROOT.require('geom').then(geo => {
+            var text = recursive_dump_geometry(obj.fMasterVolume);
+            //document.write(text);
+            var data = new Blob([text], {type: 'text/plain'});
+            var link = document.createElement('a');
+            link.setAttribute('download', 'info.txt');
+            link.href = window.URL.createObjectURL(data);
+            document.write(link.href);
+            document.body.appendChild(link);
+        });
+        await promise;
+    }
+
+    function dumpgeo() {
+        var filename = "./LHCb_run3.root";
+        JSROOT.openFile(filename)
+            .then(file => file.readObject("Default;1"))
+            .then(obj => dump_geometry(obj));
+    }
+    
     function loadgeo() {
-        var filename = "./LHCb_run3.root"
+        var filename = "./LHCb_run3.root";
         JSROOT.openFile(filename)
             .then(file => file.readObject("Default;1"))
             .then(obj => add_geometry(obj));
     }
 
     loadgeo();
+    //dumpgeo();
 
   </script>
 </body>
