@@ -171,7 +171,7 @@ function keep_only_subpart(volume, paths) {
  * Convert a given geometry to the gltf file
  * @parameter obj the input geometry
  * @parameter filename the name of the resulting file
- * @parameter max_level maximum depth to convert. Anythign below will be discarded
+ * @parameter max_level maximum depth to convert. Anything below will be discarded
  * @parameter hide_children array of paths prefix for nodes that should be ignored
  * @parameter subparts definition of the subparts to create in the geometry
  * 
