@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+
+import http.server
+import socketserver
+
+port = 8000
+
+handler = http.server.SimpleHTTPRequestHandler
+
+with socketserver.TCPServer(('', port), handler) as httpd:
+    print('Started http server to serve requests at:')
+    print('http://127.0.0.1:' + str(port))
+    httpd.serve_forever()
