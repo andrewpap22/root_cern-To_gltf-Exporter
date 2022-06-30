@@ -260,11 +260,11 @@ async function internal_convert_geometry(obj, filename, max_level, subparts, hid
     await forceDisplay()
     await convert_geometry(scenes, filename, body);}
    
-async function convertGeometry(inputFile, outputFile, max_level, subparts, hide_children) {
+async function convertGeometry(inputFile, outputFile, max_level, subparts, hide_children, objectName = "Default") {
     const body = document.body
     body.innerHTML = "<h1>Converting ROOT geometry to GLTF</h1>Input file : " + inputFile + "</br>Output file : " + outputFile + "</br>Reading input..." 
     const file = await JSROOT.openFile(inputFile)
-    const obj = await file.readObject("Default;1")
+    const obj = await file.readObject(objectName + ";1")
     await internal_convert_geometry(obj, outputFile, max_level, subparts, hide_children, body)
     body.innerHTML += "<h1>Convertion succeeded !</h1>"
 }
