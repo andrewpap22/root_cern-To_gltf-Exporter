@@ -90,7 +90,7 @@ Here we call the conversion function. Parameters are :
 ### How to run the exporter: 
 
 Two main steps :
-  * execute run.sh to start a local web server on your PC serving your freshly created `export.html` file
+  * execute `run` to start a local web server on your PC serving your freshly created `export.html` file
   * point your browser to [http://localhost:8000/export.html](http://localhost:8000/export.html)
   
 That's it, you should be able to download the GLFT resulting file.
