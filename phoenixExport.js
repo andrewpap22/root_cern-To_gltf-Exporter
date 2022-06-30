@@ -47,13 +47,21 @@ function cleanup_geometry(node, hidden_paths, max_level=999, level = 0) {
     }
 }
 
+function forceDisplay() {
+    return new Promise(resolve => setTimeout(resolve, 0));
+}
+
 /// deduplicates identical materials in the given gltf file
-function deduplicate(gltf) {
+async function deduplicate(gltf, body) {
     // deduplicate materials
+    body.innerHTML += "<h3>Materials</h3>"
+    await forceDisplay()
     // scan them, build table of correspondance
     var kept = []
     var links = {}
     var materials = gltf["materials"];
+    body.innerHTML += "initial number of materials : " + materials.length + "</br>"
+    await forceDisplay()
     for (var index = 0; index < materials.length; index++) {
         var found = false;
         for (var kindex = 0; kindex < kept.length; kindex++) {
@@ -64,7 +72,7 @@ function deduplicate(gltf) {
             }
         }
         if (!found) {
-            links[index] = kept.langth;
+            links[index] = kept.length;
             kept.push(materials[index]);
         }
     }
@@ -77,24 +85,56 @@ function deduplicate(gltf) {
             }
         }
     }
+    body.innerHTML += "new number of materials : " + gltf["materials"].length + "</br>"
+    // deduplicate meshes
+    body.innerHTML += "<h3>Meshes</h3>"
+    body.innerHTML += "initial number of meshes/accessors : " + gltf.meshes.length + "/" + gltf.accessors.length + "</br>"
+    await forceDisplay()
+    kept = []
+    links = {}
+    for (var index = 0; index < gltf.meshes.length; index++) {
+        var found = false;
+        for (var kindex = 0; kindex < kept.length; kindex++) {
+            if (JSON.stringify(kept[kindex]) == JSON.stringify(gltf.meshes[index])) {
+                links[index] = kindex;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            links[index] = kept.length;
+            kept.push(gltf.meshes[index]);
+        }
+    }
+    // now rewrite the meshes table and fix the nodes
+    gltf.meshes = kept;
+    body.innerHTML += "new number of meshes/accessors : " + gltf.meshes.length + "/" + gltf.accessors.length + "</br>"
+    await forceDisplay()
+
+    let json = JSON.stringify(gltf)
+    json = json.replace(/"mesh":([0-9]+)/g, function(a,b) {
+        return `"mesh":${links[parseInt(b)]}`
+    })
+    return JSON.parse(json)
 }
 
 /// convert given geometry to GLTF
-function convert_geometry(obj3d, name, binary) {
-    var exporter = new THREE.GLTFExporter;
-    exporter.parse(obj3d, function(gltf) {
-        if (binary) {
-            saveAs(fileToSave, name);
-        } else {
-            // json output
-            deduplicate(gltf);
-            var fileToSave = new Blob([JSON.stringify(gltf)], {
-                type: 'application/json',
-                name: name
-            });
-            saveAs(fileToSave, name);
-        }
-    }, function(){}, {'binary':binary})
+async function convert_geometry(obj3d, name, body) {
+    body.innerHTML += "<h2>Exporting to GLTF</h2>"
+    await forceDisplay()
+    const exporter = new THREE.GLTFExporter;
+    let gltf = await new Promise(resolve =>
+        exporter.parse(obj3d, resolve, {'binary':false})
+    )
+    // json output
+    body.innerHTML += "<h2>Deduplicating data in GLTF</h2>"    
+    await forceDisplay()
+    gltf = await deduplicate(gltf, body);
+    const fileToSave = new Blob([JSON.stringify(gltf)], {
+        type: 'application/json',
+        name: name
+    });
+    saveAs(fileToSave, name);
 }
 
 var kVisThis = 0x80;
@@ -174,6 +214,7 @@ function keep_only_subpart(volume, paths) {
  * @parameter max_level maximum depth to convert. Anything below will be discarded
  * @parameter hide_children array of paths prefix for nodes that should be ignored
  * @parameter subparts definition of the subparts to create in the geometry
+ * @parameter body the body tag of the page, for writing log to it
  * 
  * subparts is a dictionnary with
  *   - key being the path of the subpart in the phoenix menu, with ' > ' as separator
@@ -183,48 +224,49 @@ function keep_only_subpart(volume, paths) {
  *      + a boolean or a float between 0 and 1 defining the default visibility of the part
  *        false means not visible, true means visible, float means visible with that opacity
  */
-async function internal_convert_geometry(obj, filename, max_level, subparts, hide_children) {
-    var scenes = [];
+async function internal_convert_geometry(obj, filename, max_level, subparts, hide_children, body) {
+    const geo = await JSROOT.require('geom')
+    const scenes = [];
     // for each geometry subpart, duplicate the geometry and keep only the subpart
+    body.innerHTML += "<h2>Generating all scenes (one per subpart)</h2>"
+    await forceDisplay()
     for (const [name, entry] of Object.entries(subparts)) {
-        console.log('Generating ' + name);
+        body.innerHTML += "  " + name + "</br>"
+        await forceDisplay()
         // drop nodes we do not want to see at all (usually too detailed parts)
         cleanup_geometry(obj.fNodes.arr[0], hide_children, max_level);
         // dump to gltf, using one scene per subpart
-        var promise = JSROOT.require('geom').then(geo => {
-            // set nb of degrees per face for circles approximation (default 6)
-            // here 15 means circles are polygones with 24 faces (default 60)
-            geo.geoCfg('GradPerSegm', 15);
-            const paths = entry[0];
-            const visibility = entry[1];
-            // extract subpart of ROOT geometry
-            setVisible(obj.fNodes.arr[0]);
-            keep_only_subpart(obj.fMasterVolume, paths);
-            // convert to gltf
-            var scene = new THREE.Scene();
-            scene.name = name;
-            var children = geo.build(obj, {dflt_colors: true, vislevel:10, numfaces: 10000000, numnodes: 500000});
-            scene.children.push( children );
-            if (typeof visibility == "boolean") {
-                scene.userData = {"visible" : visibility};
-            } else {
-                scene.userData = {"visible" : true, "opacity" : visibility};
-            }
-            scenes.push(scene);
-        });
-        await promise;
+        // set nb of degrees per face for circles approximation (default 6)
+        // here 15 means circles are polygones with 24 faces (default 60)
+        geo.geoCfg('GradPerSegm', 15);
+        const paths = entry[0];
+        const visibility = entry[1];
+        // extract subpart of ROOT geometry
+        setVisible(obj.fNodes.arr[0]);
+        keep_only_subpart(obj.fMasterVolume, paths);
+        // convert to gltf
+        var scene = new THREE.Scene();
+        scene.name = name;
+        var children = geo.build(obj, {dflt_colors: true, vislevel:10, numfaces: 10000000, numnodes: 500000});
+        scene.children.push( children );
+        if (typeof visibility == "boolean") {
+            scene.userData = {"visible" : visibility};
+        } else {
+            scene.userData = {"visible" : true, "opacity" : visibility};
+        }
+        scenes.push(scene);
     }
-    console.log(scenes.length + ' scenes generated');
-    convert_geometry(scenes, filename, false); // not using binary format
-}
+    body.innerHTML += '</br>' + scenes.length + ' scenes generated</br>';
+    await forceDisplay()
+    await convert_geometry(scenes, filename, body);}
    
-function convertGeometry(inputFile, outputFile, max_level, subparts, hide_children) {
-    var msg = "Converting ROOT geometry from " + inputFile + " to GLTF format in " + outputFile + "...</br>";
-    document.getElementsByTagName("body")[0].innerHTML = msg;
-    JSROOT.openFile(inputFile)
-        .then(file => file.readObject("Default;1"))
-        .then(obj => internal_convert_geometry(obj, outputFile, max_level, subparts, hide_children));
-    document.getElementsByTagName("body")[0].innerHTML = msg + "Convertion succeeded</br>";
+async function convertGeometry(inputFile, outputFile, max_level, subparts, hide_children) {
+    const body = document.body
+    body.innerHTML = "<h1>Converting ROOT geometry to GLTF</h1>Input file : " + inputFile + "</br>Output file : " + outputFile + "</br>Reading input..." 
+    const file = await JSROOT.openFile(inputFile)
+    const obj = await file.readObject("Default;1")
+    await internal_convert_geometry(obj, outputFile, max_level, subparts, hide_children, body)
+    body.innerHTML += "<h1>Convertion succeeded !</h1>"
 }
 
 export {convertGeometry};
