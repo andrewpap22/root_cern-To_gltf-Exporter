@@ -36,14 +36,16 @@ This is loading the various external libraries. Copy as is unless you want to us
  ```
 This is the core of the conversion, where you define what to convert and how.
 
-The first entry `hide_children` defines a list of path prefixes matching the subparts to be ignored.
-Any entry in the geometry starting with one of these prefix will be dropped as well as all its children
+The first entry `hide_children` defines a list of paths matching the subparts to be ignored.
+Paths can be string or regular expressions. Any entry in the geometry starting with one of the strings or matching of
+of the regular expression will be dropped as well as all its children
 
-Here is an example of a potential hide_chidren declaration :
+Here is an example of a potential hide_chidren declaration (2 strings and 1 regular expression) :
 ```javascript
     var hide_children = [
         "_dd_Geometry_BeforeMagnetRegion_VP_Supports_lvDeliveryPipe",
-        "_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1PhDetSupFrame"
+        "_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1PhDetSupFrame",
+        /_dd_Geometry_BeforeMagnetRegion_.*Test.*/
     ];
 ```
 
@@ -54,8 +56,9 @@ matching one item in the phoenix "Detector" menu :
   * the key is the menu item name, including its hierarchy, with ' > ' as a separator.
     So "a > b > c" will be entry c in submenu b of menu a
   * the value is an array of 2 items :
-    * a list of prefixes of paths to consider. These paths and all their children (but the ones is `hide_children`
-      will be part of the current entry
+    * a list of paths to consider, given as a set of strings and regular expressions.
+      Paths starting with one of the strings or matching one of the regular expresions
+      will be part of the current entry as well as all their children (but the ones is `hide_children` obviously)
     * a boolean or a float between 0 and 1 defining the initial visibility of the entry in phoenix
       * false means not visible
       * true means visible
@@ -63,12 +66,12 @@ matching one item in the phoenix "Detector" menu :
 Here is an example of a potential subpart declaration, with all 3 items within a `VP` submenu :
 ```javascript
     var subparts = {
+        "VP > Modules" : [[/_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVP(Left|Right)_pvModule[1234567890]*WithSupport_pvModule/,
+                           /_dd_Geometry_BeforeMagnetRegion_VP.*Nikhef.*/], true],
+        "VP > Support" : [[/_dd_Geometry_BeforeMagnetRegion_VP.*Foot.*/,
+                           /_dd_Geometry_BeforeMagnetRegion_VP.*Clamp.*/], true],
         "VP > RFFoil" : [["_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvLeftRFFoil",
-                          "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPRight_pvRightRFFoil"], false], // not visible
-        "VP > Modules" : [["_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule",
-                           "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPRight_pvModule"], true],      // visible
-        "VP > Structure" : [["_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvLeftDetSup",
-                             "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPRight_pvRightDetSup"], .3]  // opacity 0.3
+                          "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPRight_pvRightRFFoil"], false],
     }; 
 ```
 

@@ -10,10 +10,16 @@
  */
 
 /// checks whether a name matches one of the given paths
-function startsWith(name, paths) {
+function matches(name, paths) {
     for (const path of paths) {
-        if (name.startsWith(path)) {
-            return true;
+        if (typeof(path) == "string") {
+            if (name.startsWith(path)) {
+                return true;
+            }
+        } else { // needs to be a regexp
+            if (name.match(path)) {
+                return true;
+            }
         }
     }
     return false;
@@ -39,7 +45,7 @@ function filterArrayInPlace(a, condition, thisArg) {
 function cleanup_geometry(node, hidden_paths, max_level=999, level = 0) {
     if (node.fVolume.fNodes) {
         // drop hidden nodes, and everything after level 4
-        filterArrayInPlace(node.fVolume.fNodes.arr, n=>level<max_level&&!startsWith(n.fName, hidden_paths));
+        filterArrayInPlace(node.fVolume.fNodes.arr, n=>level<max_level&&!matches(n.fName, hidden_paths));
         // recurse to children
         for (const snode of node.fVolume.fNodes.arr) {
             cleanup_geometry(snode, hidden_paths, max_level, level + 1);
@@ -190,7 +196,7 @@ function keep_only_subpart(volume, paths) {
     var anyfound = false;
     for (var j = 0; j < volume.fNodes.arr.length; j++) {
         var snode = volume.fNodes.arr[j];
-        if (startsWith(snode.fName, paths)) {
+        if (matches(snode.fName, paths)) {
             // need to be resursive in case something deeper was hidden in previous round
             set_visible_recursively(snode);
             anyfound=true;

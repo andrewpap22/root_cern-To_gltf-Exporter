@@ -14,9 +14,6 @@
 
     var hide_children = [
 
-        // Drop VP delivery pipes
-        "_dd_Geometry_BeforeMagnetRegion_VP_Supports_lvDeliveryPipe",
-        
         // Drop Rich1 DetSupFrame and QuadrantModule
         "_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1PhDetSupFrame",
         "_dd_Geometry_BeforeMagnetRegion_Rich1_lvRich1Mirror1QuadrantModule",
@@ -68,10 +65,15 @@
                                     "_dd_Structure_LHCb_AfterMagnetRegion_Pipe",
                                     "_dd_Structure_LHCb_DownstreamRegion_Pipe"], true],
         // VP
+        "VP > Modules" : [[/_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVP(Left|Right)_pvModule[1234567890]*WithSupport_pvModule/], true],
+        "VP > Support" : [[/_dd_Geometry_BeforeMagnetRegion_VP.*Foot.*/,
+                           /_dd_Geometry_BeforeMagnetRegion_VP.*Nikhef.*/,
+                           /_dd_Geometry_BeforeMagnetRegion_VP.*Clamp.*/], true],
         "VP > RFFoil" : [["_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvLeftRFFoil",
                           "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPRight_pvRightRFFoil"], false],
-        "VP > Modules" : [["_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvModule",
-                           "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPRight_pvModule"], true],
+        "VP > DeliveryPipes" : [[/_dd_Geometry_BeforeMagnetRegion_VP.*DeliveryPipe.*/,
+                                 /_dd_Geometry_BeforeMagnetRegion_VP.*Braze.*/,
+                                 /_dd_Geometry_BeforeMagnetRegion_VP.*CoolingConnector.*/], false],
         "VP > Structure" : [["_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPLeft_pvLeftDetSup",
                              "_dd_Geometry_BeforeMagnetRegion_VP_lvVP_pvVPRight_pvRightDetSup"], .3],
         // UT
